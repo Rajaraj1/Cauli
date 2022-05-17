@@ -16,8 +16,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.wish.Adapter.FriendAdapter;
-import com.example.wish.Model.FriendModel;
+import com.example.wish.Adapter.FollowersAdapter;
+import com.example.wish.Model.Follow;
 import com.example.wish.R;
 import com.example.wish.Model.User;
 import com.example.wish.databinding.FragmentProfileBinding;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 
 public class ProfileFragment extends Fragment {
     RecyclerView recyclerView;
-    ArrayList<FriendModel> list;
+    ArrayList<Follow> list;
     FirebaseAuth auth;
     FirebaseStorage storage;
     FirebaseDatabase database;
@@ -68,26 +68,27 @@ public class ProfileFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     User user = snapshot.getValue(User.class);
-//                    Picasso.get()
+                    Picasso.get()
+                            .load(user.getCoverPhoto())
+                            .placeholder(R.drawable.modi)
+                            .into(binding.coverPhoto);
+                    Picasso.get()
+                            .load(user.getProfile())
+                            .placeholder(R.drawable.modi)
+                            .into(binding.profileImage);
+
+//                    Glide.with(getContext())
 //                            .load(user.getCoverPhoto())
 //                            .placeholder(R.drawable.diya_singh)
 //                            .into(binding.coverPhoto);
-//                    Picasso.get()
+//
+//                    Glide.with(getContext())
 //                            .load(user.getProfile())
 //                            .placeholder(R.drawable.riya_raj_1)
 //                            .into(binding.profileImage);
-
-                    Glide.with(getContext())
-                            .load(user.getCoverPhoto())
-                            .placeholder(R.drawable.diya_singh)
-                            .into(binding.coverPhoto);
-
-                    Glide.with(getContext())
-                            .load(user.getProfile())
-                            .placeholder(R.drawable.riya_raj_1)
-                            .into(binding.profileImage);
                     binding.userName.setText(user.getName());
                     binding.profession.setText(user.getProfession());
+                    binding.followers.setText(user.getFollowerCount()+"");
                 }
             }
 
@@ -98,18 +99,31 @@ public class ProfileFragment extends Fragment {
         });
 
         list = new ArrayList<>();
-
-        list.add(new FriendModel(R.drawable.riya));
-        list.add(new FriendModel(R.drawable.riya_raj_1));
-        list.add(new FriendModel(R.drawable.cute_girl));
-        list.add(new FriendModel(R.drawable.riya_raj));
-        list.add(new FriendModel(R.drawable.diya));
-        list.add(new FriendModel(R.drawable.diya_singh));
-
-        FriendAdapter adapter = new FriendAdapter(list, getContext());
+        FollowersAdapter adapter = new FollowersAdapter(list, getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
+
+        database.getReference().child("Users")
+                .child(auth.getUid())
+                .child("followers").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        list.clear();
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Follow follow = dataSnapshot.getValue(Follow.class);
+                            list.add(follow);
+                        }
+
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
 
         binding.changeCoverPhoto.setOnClickListener(new View.OnClickListener() {
             @Override

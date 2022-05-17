@@ -24,7 +24,7 @@
                 android:layout_marginRight="15dp"
                 android:gravity="center"
                 android:padding="4dp"
-                android:text="Naudio"
+                android:text="Cauli"
                 android:textAlignment="center"
                 android:textColor="@color/titlecolor"
                 android:textSize="30sp"
