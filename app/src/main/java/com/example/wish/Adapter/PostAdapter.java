@@ -14,6 +14,8 @@ import com.example.wish.Model.Post;
 import com.example.wish.Model.User;
 import com.example.wish.R;
 import com.example.wish.databinding.DashboardRvSampleBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -46,28 +48,82 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.viewHolder> {
         Post model = list.get(position);
         Picasso.get()
                 .load(model.getPostImage())
-                .placeholder(R.drawable.diya_singh)
+                .placeholder(R.color.white)
                 .into(holder.binding.postImage);
-        holder.binding.postDescription.setText(model.getPostDescription());
+        holder.binding.like.setText(model.getPostLike() + "");
+        String description = model.getPostDescription();
+        if (description.equals("")) {
+            holder.binding.postDescription.setVisibility(View.GONE);
+        } else {
+            holder.binding.postDescription.setText(model.getPostDescription());
+            holder.binding.postDescription.setVisibility(View.VISIBLE);
+        }
 
-//        FirebaseDatabase.getInstance().getReference().child("Users")
-//                .child(model.getPostedBy()).addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                        User user = snapshot.getValue(User.class);
-//                        Picasso.get()
-//                                .load(user.getProfile())
-//                                .placeholder(R.drawable.diya_singh)
-//                                .into(holder.binding.profileImage);
-//                        holder.binding.userName.setText(user.getName());
-//                        holder.binding.bio.setText(user.getProfession());
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//
-//                    }
-//                });
+        FirebaseDatabase.getInstance().getReference().child("Users")
+                .child(model.getPostedBy()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+                        Picasso.get()
+                                .load(user.getProfile())
+                                .placeholder(R.color.white)
+                                .into(holder.binding.profileImage);
+                        holder.binding.userName.setText(user.getName());
+                        holder.binding.bio.setText(user.getProfession());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("posts")
+                .child(model.getPostId())
+                .child("likes")
+                .child(FirebaseAuth.getInstance().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_like_1, 0, 0, 0);
+                        } else {
+                            holder.binding.like.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("posts")
+                                            .child(model.getPostId())
+                                            .child("likes")
+                                            .child(FirebaseAuth.getInstance().getUid())
+                                            .setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void unused) {
+                                                    FirebaseDatabase.getInstance().getReference()
+                                                            .child("posts")
+                                                            .child(model.getPostId())
+                                                            .child("postLike")
+                                                            .setValue(model.getPostLike() + 1).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void unused) {
+                                                                    holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_like_1, 0, 0, 0);
+
+                                                                }
+                                                            });
+                                                }
+                                            });
+                                }
+                            });
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
 
     @Override
@@ -80,7 +136,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.viewHolder> {
 
         public viewHolder(@NonNull View itemView) {
             super(itemView);
-binding = DashboardRvSampleBinding.bind(itemView);
+            binding = DashboardRvSampleBinding.bind(itemView);
         }
     }
 }

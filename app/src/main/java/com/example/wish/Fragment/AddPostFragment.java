@@ -138,7 +138,7 @@ public class AddPostFragment extends Fragment {
                             public void onSuccess(Uri uri) {
                                 Post post = new Post();
                                 post.setPostImage(uri.toString());
-                                post.setPostedBy(FirebaseAuth.getInstance().getTenantId());
+                                post.setPostedBy(FirebaseAuth.getInstance().getUid());
                                 post.setPostDescription(binding.postDescription.getText().toString());
                                 post.setPostedAt(new Date().getTime());
 

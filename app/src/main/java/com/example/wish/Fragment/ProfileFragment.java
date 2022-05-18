@@ -70,11 +70,11 @@ public class ProfileFragment extends Fragment {
                     User user = snapshot.getValue(User.class);
                     Picasso.get()
                             .load(user.getCoverPhoto())
-                            .placeholder(R.drawable.modi)
+                            .placeholder(R.color.white)
                             .into(binding.coverPhoto);
                     Picasso.get()
                             .load(user.getProfile())
-                            .placeholder(R.drawable.modi)
+                            .placeholder(R.color.white)
                             .into(binding.profileImage);
 
 //                    Glide.with(getContext())

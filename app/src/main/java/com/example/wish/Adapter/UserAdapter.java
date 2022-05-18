@@ -46,7 +46,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
         User user = list.get(position);
         Picasso.get()
                 .load(user.getProfile())
-                .placeholder(R.drawable.diya_singh)
+                .placeholder(R.color.white)
                 .into(holder.binding.profileImage);
         holder.binding.name.setText(user.getName());
         holder.binding.profession.setText(user.getProfession());

@@ -50,7 +50,7 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.view
                         User user = snapshot.getValue(User.class);
                         Picasso.get()
                                 .load(user.getProfile())
-                                .placeholder(R.drawable.diya_singh)
+                                .placeholder(R.color.white)
                                 .into(holder.binding.profileImage);
 //                        Glide.with(context)
 //                                .load(user.getProfile())

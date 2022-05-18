@@ -1,5 +1,6 @@
 package com.example.wish.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,12 +11,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.wish.Adapter.PostAdapter;
 import com.example.wish.Adapter.StoryAdapter;
 import com.example.wish.Model.Post;
 import com.example.wish.Model.StoryModel;
+import com.example.wish.NewsActivity;
 import com.example.wish.R;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,6 +35,8 @@ public class HomeFragment extends Fragment {
     ArrayList<Post> postList;
     FirebaseAuth auth;
     FirebaseDatabase database;
+    TextView discover;
+    ShimmerFrameLayout shimmerFrameLayout;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -53,11 +59,20 @@ public class HomeFragment extends Fragment {
 
 
         storyRv = view.findViewById(R.id.storyRv);
+        discover = view.findViewById(R.id.discover);
+
+        discover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent =  new Intent(getContext(), NewsActivity.class);
+                startActivity(intent);
+            }
+        });
 
         list = new ArrayList<>();
-        list.add(new StoryModel(R.drawable.riya_raj_1, R.drawable.ic_live, R.drawable.riya_raj_1, "Riya raj"));
-        list.add(new StoryModel(R.drawable.diya_singh, R.drawable.ic_live, R.drawable.diya_singh, "Riya raj"));
-        list.add(new StoryModel(R.drawable.diya_singh, R.drawable.ic_live, R.drawable.diya_singh, "Riya raj"));
+        list.add(new StoryModel(R.drawable.modi, R.drawable.ic_live, R.drawable.modi, "India News"));
+        list.add(new StoryModel(R.drawable.mobama, R.drawable.ic_live, R.drawable.mobama, "Aaj Tak"));
+        list.add(new StoryModel(R.drawable.anjana, R.drawable.ic_live, R.drawable.aajtakanchor, "Anjana"));
 
         StoryAdapter adapter = new StoryAdapter(list, getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -79,8 +94,10 @@ public class HomeFragment extends Fragment {
         database.getReference().child("posts").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                postList.clear();
                 for(DataSnapshot dataSnapshot : snapshot.getChildren()){
                     Post post = dataSnapshot.getValue(Post.class);
+                    post.setPostId(dataSnapshot.getKey());
                     postList.add(post);
                 }
                 postAdapter.notifyDataSetChanged();

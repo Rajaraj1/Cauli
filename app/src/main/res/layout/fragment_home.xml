@@ -22,7 +22,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/discover"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -41,7 +41,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:padding="4dp"
-                android:src="@drawable/cute_girl"
+                android:src="@drawable/breaking"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -101,7 +101,7 @@
                             android:layout_height="@dimen/_85mdp"
                             android:layout_marginStart="16dp"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/cute_girl"
+                            android:src="@drawable/breaking"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:riv_border_color="#333333"
